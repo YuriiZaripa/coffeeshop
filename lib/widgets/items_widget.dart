@@ -11,10 +11,6 @@ class ItemsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (items.isEmpty) {
-      return CircularProgressIndicator();
-    }
-
     return GridView.count(
       physics: NeverScrollableScrollPhysics(),
       crossAxisCount: 2,

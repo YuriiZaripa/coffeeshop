@@ -29,11 +29,44 @@ class HomeBottomBar extends StatelessWidget {
             color: Colors.white,
             size: 35,
           ),
-          Icon(
-            Icons.notifications,
-            color: Colors.white,
-            size: 35,
+          IconButton(
+            icon: Stack(
+              children: [
+                Icon(Icons.shopping_cart),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    padding: EdgeInsets.only(top: 2, right: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      '3', // Кількість товарів у корзині
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            onPressed: () {
+              // Обробник події для натискання на іконку кошика
+            },
           ),
+          // Icon(
+          //   Icons.shopping_cart,
+          //   color: Colors.white,
+          //   size: 35,
+          // ),
           Icon(
             Icons.person,
             color: Colors.white,

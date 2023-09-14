@@ -1,26 +1,34 @@
-import 'package:coffeeshop/repository/drinks/drinks_repository.dart';
-import 'package:coffeeshop/widgets/items_widget.dart';
+import 'dart:core';
+
 import 'package:flutter/material.dart';
 
 import '../repository/drinks/models/item.dart';
 import '../widgets/home_bottom_bar.dart';
+import '../widgets/items_widget.dart';
 
 class DrinksCatalogScreen extends StatefulWidget {
+  final List<Item> _drinks;
+  DrinksCatalogScreen(this._drinks);
+
   @override
-  State<DrinksCatalogScreen> createState() => _DrinksCatalogScreenState();
+  State<DrinksCatalogScreen> createState() => _DrinksCatalogScreenState(_drinks);
 }
 
 class _DrinksCatalogScreenState extends State<DrinksCatalogScreen>
     with SingleTickerProviderStateMixin {
+  final List<Item> _drinks;
   late TabController _tabController;
-  late List<Item> _drinks = [];
+  late Map<String,List<Item>> _itemsCategoryMap;
+  late List<String> _categories;
+
+  _DrinksCatalogScreenState(this._drinks);
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
-    _tabController.addListener(_handleTabSelection);
     _initData();
+    _tabController = TabController(length: _categories.length, vsync: this, initialIndex: 0);
+    _tabController.addListener(_handleTabSelection);
   }
 
   _handleTabSelection() {
@@ -29,11 +37,16 @@ class _DrinksCatalogScreenState extends State<DrinksCatalogScreen>
     }
   }
 
-  Future<void> _initData() async {
-    final drinks = await DrinksRepository().getDrinks();
-    setState(() {
-      _drinks = drinks;
-    });
+  void _initData() {
+    _itemsCategoryMap = {};
+      _drinks.forEach((element) {
+        if (_itemsCategoryMap.containsKey(element.itemType)) {
+          _itemsCategoryMap[element.itemType]?.add(element);
+        } else {
+          _itemsCategoryMap.putIfAbsent(element.itemType, () => [element]);
+        }
+      });
+      _categories = List.of(_itemsCategoryMap.keys);
   }
 
   @override
@@ -124,21 +137,15 @@ class _DrinksCatalogScreenState extends State<DrinksCatalogScreen>
                     fontWeight: FontWeight.w500,
                   ),
                   labelPadding: EdgeInsets.symmetric(horizontal: 18),
-                  tabs: [
-                    Tab(text: "Hot Coffee"),
-                    Tab(text: "Cold Coffee"),
-                    Tab(text: "Tea"),
-                    Tab(text: "Cacao"),
-                  ]),
+                  tabs: _categories.map((e) => Tab(text: e)).toList(),
+              ),
               SizedBox(
                 height: 10,
               ),
               Center(
                 child: [
-                  ItemsWidget(_drinks),
-                  ItemsWidget(_drinks),
-                  ItemsWidget(_drinks),
-                  ItemsWidget(_drinks),
+                  for(String category in _categories)
+                  ItemsWidget(_itemsCategoryMap[category]!),
                 ][_tabController.index],
               ),
             ],

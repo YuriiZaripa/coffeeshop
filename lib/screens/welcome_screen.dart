@@ -1,9 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../repository/drinks/drinks_repository.dart';
+import '../repository/drinks/models/item.dart';
 import 'drinks_catalog_screen.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  List<Item> _drinks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    final drinks = await DrinksRepository().getDrinks();
+    setState(() {
+      _drinks = drinks;
+      print(_drinks);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -40,33 +63,36 @@ class WelcomeScreen extends StatelessWidget {
                 SizedBox(
                   height: 80,
                 ),
+                _drinks.isEmpty
+                    ? CircularProgressIndicator()
+                    :
                 Material(
-                  color: Color(0xFFE57734),
-                  borderRadius: BorderRadius.circular(10),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DrinksCatalogScreen(),
-                          ));
-                    },
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                      decoration: BoxDecoration(),
-                      child: Text(
-                        'Get Started',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1,
+                        color: Color(0xFFE57734),
+                        borderRadius: BorderRadius.circular(10),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DrinksCatalogScreen(_drinks),
+                                ));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 50),
+                            decoration: BoxDecoration(),
+                            child: Text(
+                              'Get Started',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
                 SizedBox(
                   height: 15,
                 ),
